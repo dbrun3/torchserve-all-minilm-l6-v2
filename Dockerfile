@@ -1,5 +1,5 @@
 # Builder image
-FROM pytorch/torchserve AS builder
+FROM pytorch/torchserve:0.8.1-cpu AS builder
 
 WORKDIR /usr/app
 ADD requirements.txt .
@@ -14,7 +14,7 @@ ADD scripts/create-archive.sh scripts/create-archive.sh
 RUN ./scripts/create-archive.sh
 
 # Production image
-FROM pytorch/torchserve
+FROM pytorch/torchserve:0.8.1-cpu
 
 ADD requirements.txt .
 RUN pip install -r requirements.txt
