@@ -4,6 +4,7 @@ import torch.nn.functional as F
 import logging
 import transformers
 import os
+import json
 
 from ts.torch_handler.base_handler import BaseHandler
 from transformers import AutoModel, AutoTokenizer
@@ -96,7 +97,11 @@ class ModelHandler(BaseHandler):
         data = requests[0].get('body')
         if data is None:
             data = requests[0].get('data')
-        
+
+        # handle gRPC bytearray data
+        if isinstance(data, bytearray):
+            data = json.loads(data.decode('utf-8'))
+
         texts = data.get('input')
         if texts is not None:
             logger.info('Text provided')
@@ -126,7 +131,7 @@ class ModelHandler(BaseHandler):
         sentence_embeddings = F.normalize(sentence_embeddings, p=2, dim=1)
         logger.info('Embeddings successfully computed')
         return sentence_embeddings
-    
+
     def postprocess(self, outputs: list):
         """
         Convert the tensor into a list.
